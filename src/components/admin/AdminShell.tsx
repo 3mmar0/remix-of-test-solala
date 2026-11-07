@@ -53,7 +53,7 @@ export function AdminShell({ children, title, desc, actions }: { children: React
           {children}
         </main>
 
-        <aside id="admin-navigation" className={`${menuOpen ? "block" : "hidden"} order-1 border-b border-border bg-forest text-forest-foreground lg:block lg:border-b-0 lg:border-e lg:border-forest-foreground/20`}>
+        <aside id="admin-navigation" className={`${menuOpen ? "block" : "hidden"} fixed right-0 top-14 z-40 max-h-[calc(100dvh-3.5rem)] w-72 max-w-full overflow-y-auto order-1 border-b border-border bg-forest text-forest-foreground lg:static lg:block lg:max-h-none lg:w-auto lg:overflow-visible lg:border-b-0 lg:border-e lg:border-forest-foreground/20`}>
           <div className="flex flex-col px-4 py-4 sm:px-5 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto lg:py-6">
             <Link to="/admin" className="mb-8 hidden items-center gap-3 px-2 lg:flex">
               <span className="grid h-10 w-10 place-items-center rounded-xl bg-gold/20 text-gold">
