@@ -6,8 +6,8 @@
 - [x] Schema-driven CMS: page definitions + editable sections + live-preview page editor
 - [x] Courses admin: catalog tree, CRUD, categories/specialties dialogs, reorder, duplicate
 - [x] Backend: bulk page-content save (PUT /admin/page-content), course/category/specialty DELETE endpoints, CORS for Lovable preview origins
-- [ ] Add a useful, protected admin dashboard to the admin pages list
-- [ ] Move the admin sidebar to the right and improve the mobile layout
-- [ ] Repair broken checkbox and check-input styling in the admin
+- [x] Add a useful, protected admin dashboard to the admin pages list
+- [x] Move the admin sidebar to the right and improve the mobile layout
+- [x] Repair broken checkbox and check-input styling in the admin
 - [ ] Deploy backend changes to backend.solalaa.com (user action: upload/pull the updated backend files)
-- [ ] End-to-end verify live save/publish + course CRUD against the deployed backend (needs deployed backend + admin credentials)
+- [ ] End-to-end verify live dashboard totals + save/publish + course CRUD against the deployed backend (needs deployed backend + a valid admin session; layout checks used isolated sample responses)

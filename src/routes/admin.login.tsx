@@ -3,8 +3,10 @@ import { FormEvent, useState } from "react";
 import { Sprout } from "lucide-react";
 import { loginAdmin } from "@/lib/cms/client-store";
 import { adminInput } from "@/components/admin/AdminShell";
+import { adminMeta } from "@/lib/meta";
 
 export const Route = createFileRoute("/admin/login")({
+  head: () => adminMeta("دخول الإدارة", "تسجيل الدخول الآمن إلى إدارة منصة سلالة.", "/admin/login"),
   component: AdminLogin,
 });
 

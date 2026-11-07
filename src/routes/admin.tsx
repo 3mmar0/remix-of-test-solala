@@ -1,15 +1,13 @@
-import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
-import { isAdminAuthed } from "@/lib/cms/client-store";
+import { Outlet, createFileRoute } from "@tanstack/react-router";
+import { requireAdminSession } from "@/lib/admin-access";
 
 export const Route = createFileRoute("/admin")({
+  ssr: false,
   component: AdminLayout,
-  beforeLoad: ({ location }) => {
-    if (typeof window === "undefined") return;
+  beforeLoad: async ({ location }) => {
     const path = location.pathname;
     if (path === "/admin/login") return;
-    if (!isAdminAuthed()) {
-      throw redirect({ to: "/admin/login" });
-    }
+    await requireAdminSession();
   },
 });
 

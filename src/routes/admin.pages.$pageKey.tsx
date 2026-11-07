@@ -21,6 +21,7 @@ import {
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
 import { SectionFieldsEditor, fieldInput } from "@/components/admin/fields";
 import { isAdminAuthed, savePageContent, updatePageRow } from "@/lib/cms/client-store";
 import { useCms } from "@/lib/cms/CmsProvider";
@@ -28,12 +29,13 @@ import { findCmsPage } from "@/lib/cms/pages";
 import { PREVIEW_PARAM, isPreviewMessage, type PreviewSectionState } from "@/lib/cms/preview";
 import { resolveContent, serializeContent, type PageDef, type SectionContent } from "@/lib/cms/schema";
 import { savedSectionStates } from "@/lib/cms/use-section";
+import { adminMeta } from "@/lib/meta";
 
 export const Route = createFileRoute("/admin/pages/$pageKey")({
   beforeLoad: () => {
     if (typeof window !== "undefined" && !isAdminAuthed()) throw redirect({ to: "/admin/login" });
   },
-  head: () => ({ meta: [{ title: "تحرير الصفحة | لوحة تحكم Solala" }, { name: "robots", content: "noindex" }] }),
+  head: ({ params }) => adminMeta(`تحرير ${findCmsPage(params.pageKey)?.title ?? "الصفحة"}`, "تحرير محتوى صفحة سلالة ومعاينة التغييرات.", `/admin/pages/${params.pageKey}`),
   component: PageEditorRoute,
 });
 
@@ -199,7 +201,7 @@ function PageEditor({ page }: { page: PageDef }) {
   const activeDraft = active && drafts ? drafts[active] : undefined;
 
   return (
-    <div className="flex h-screen flex-col bg-muted text-forest">
+    <div className="flex min-h-dvh flex-col bg-muted text-forest lg:h-dvh lg:min-h-0">
       <Toaster position="top-center" richColors />
       {/* Top bar */}
       <header className="flex flex-wrap items-center gap-3 border-b border-forest/10 bg-card px-4 py-2.5">
@@ -211,26 +213,29 @@ function PageEditor({ page }: { page: PageDef }) {
           <p className="text-xs text-muted-foreground" dir="ltr">{page.slug}</p>
         </div>
 
-        <div className="mx-auto hidden items-center rounded-xl bg-muted p-1 md:flex">
+        <div className="mx-auto flex items-center rounded-xl bg-muted p-1">
           {([
             ["desktop", Laptop, "حاسوب"],
             ["tablet", Tablet, "جهاز لوحي"],
             ["mobile", Smartphone, "جوال"],
           ] as const).map(([d, Icon, label]) => (
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               key={d}
               type="button"
               title={label}
               aria-label={label}
+              aria-pressed={device === d}
               onClick={() => setDevice(d)}
               className={`rounded-lg px-3 py-1.5 transition ${device === d ? "bg-card text-primary shadow-sm" : "text-forest/50 hover:text-forest"}`}
             >
               <Icon className="h-4 w-4" />
-            </button>
+            </Button>
           ))}
         </div>
 
-        <div className="ms-auto flex items-center gap-2">
+        <div className="ms-auto flex flex-wrap items-center gap-2">
           {dirty ? (
             <span className="hidden items-center gap-1.5 rounded-full bg-gold/20 px-3 py-1 text-xs font-semibold text-gold-dark sm:inline-flex">
               <span className="h-1.5 w-1.5 rounded-full bg-gold-dark" /> تعديلات غير محفوظة
@@ -267,9 +272,9 @@ function PageEditor({ page }: { page: PageDef }) {
         </div>
       </header>
 
-      <div className="grid min-h-0 flex-1 lg:grid-cols-[400px_1fr]">
+      <div className="grid min-h-0 flex-1 lg:grid-cols-[400px_minmax(0,1fr)]">
         {/* Side panel */}
-        <aside className="flex min-h-0 flex-col border-forest/10 bg-card lg:border-e">
+        <aside className="flex min-h-0 max-h-[65dvh] flex-col border-forest/10 bg-card lg:max-h-none lg:border-e">
           {!drafts ? (
             <div className="grid flex-1 place-items-center text-sm text-muted-foreground">
               <Loader2 className="h-5 w-5 animate-spin" />
@@ -361,7 +366,7 @@ function PageEditor({ page }: { page: PageDef }) {
         </aside>
 
         {/* Live preview */}
-        <section className="relative min-h-[60vh] overflow-auto bg-muted p-3 lg:min-h-0">
+        <section className="relative h-[70dvh] min-w-0 overflow-auto bg-muted p-3 lg:h-auto lg:min-h-0">
           <div
             className="mx-auto h-full overflow-hidden rounded-xl border border-forest/10 bg-background shadow-soft transition-[width] duration-300"
             style={{ width: DEVICE_WIDTH[device], maxWidth: "100%" }}

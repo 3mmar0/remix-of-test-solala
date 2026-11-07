@@ -85,9 +85,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:site_name", content: "Solala سلالة" },
       { property: "og:locale", content: "ar_EG" },
       { property: "og:url", content: "https://solalaa.com/" },
-      { property: "og:image", content: "https://solalaa.com/solala-logo.png" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:image", content: "https://solalaa.com/solala-logo.png" },
     ],
     links: [
       { rel: "canonical", href: "https://solalaa.com/" },
