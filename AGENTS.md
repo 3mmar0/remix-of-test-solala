@@ -29,6 +29,6 @@ use the editor.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
 
-- Verify browser admin sessions using the existing protected Laravel API before rendering admin content; token presence alone does not establish authentication.
+- Keep admin routes client-rendered because Laravel sessions live in sessionStorage; verify them using the protected API before rendering content rather than trusting token presence.
 - Load dashboard totals with shared TanStack Query options and the existing Laravel endpoints so counts reflect protected live records.
 - Keep RTL switch geometry in the shared Switch component so all admin publication controls inherit the same behavior.
