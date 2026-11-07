@@ -32,13 +32,13 @@ export function AdminShell({ children, title, desc, actions }: { children: React
   return (
     <div dir="rtl" className="admin-shell min-h-screen bg-muted text-forest">
       <Toaster position="top-center" richColors />
-      <div className="flex items-center justify-between border-b border-border bg-forest px-4 py-3 text-forest-foreground lg:hidden">
+      <div className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-forest px-4 py-3 text-forest-foreground lg:hidden">
         <Link to="/admin" className="flex items-center gap-2 font-display font-bold"><Sprout className="h-5 w-5 text-gold" /> Solala Admin</Link>
         <Button variant="ghost" size="icon" aria-label={menuOpen ? "إغلاق القائمة" : "فتح القائمة"} aria-expanded={menuOpen} aria-controls="admin-navigation" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X /> : <Menu />}</Button>
       </div>
       <div className="mx-auto grid min-h-screen max-w-[1400px] lg:grid-cols-[260px_minmax(0,1fr)]">
         <main className="order-2 min-w-0 px-4 py-6 sm:px-8 lg:py-10">
-          <div className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-forest/10 pb-6">
+          <header className="sticky top-14 z-30 -mt-6 mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-forest/10 bg-muted py-6 lg:top-0 lg:-mt-10">
             <div className="min-w-0">
               <p className="text-xs font-semibold tracking-wide text-gold-dark">سجل التحرير · Solala</p>
               <h1 className="mt-1 break-words font-display text-2xl font-bold sm:text-3xl md:text-4xl">{title}</h1>
@@ -49,7 +49,7 @@ export function AdminShell({ children, title, desc, actions }: { children: React
               {saving ? <span className="text-primary">جاري الحفظ...</span> : null}
               {lastSaveMode === "server" && <span className="rounded-full bg-secondary px-3 py-1 text-primary">محفوظ على الخادم</span>}
             </div>
-          </div>
+          </header>
           {children}
         </main>
 
