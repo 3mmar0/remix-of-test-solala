@@ -11,7 +11,10 @@ class Cors
     public function handle(Request $request, Closure $next): Response
     {
         $origin = $request->headers->get('Origin');
-        $allowed = ['https://solalaa.com', 'https://www.solalaa.com', 'http://localhost:3000', 'http://localhost:5173'];
+        $allowed = ['https://solalaa.com', 'https://www.solalaa.com', 'http://localhost:3000', 'http://localhost:5173', 'http://localhost:8080'];
+        // Lovable preview/published origins use dynamic subdomains of lovable.app.
+        $host = $origin ? (string) (parse_url($origin, PHP_URL_HOST) ?? '') : '';
+        $originAllowed = $origin && (in_array($origin, $allowed, true) || str_ends_with($host, '.lovable.app') || $host === 'lovable.app');
 
         if ($request->getMethod() === 'OPTIONS') {
             $response = response('', 204);
@@ -19,7 +22,7 @@ class Cors
             $response = $next($request);
         }
 
-        if ($origin && in_array($origin, $allowed, true)) {
+        if ($originAllowed) {
             $response->headers->set('Access-Control-Allow-Origin', $origin);
             $response->headers->set('Vary', 'Origin');
         }

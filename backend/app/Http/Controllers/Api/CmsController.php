@@ -38,6 +38,52 @@ class CmsController extends Controller
         return response()->json(['sections' => DB::table('cms_sections')->whereIn('id', $data['sectionIds'])->orderBy('position')->get()->map(fn ($row) => $this->serializeSection($row))->all()]);
     }
 
+    public function updatePageContent(Request $request)
+    {
+        $data = $request->validate([
+            'slug' => ['required', 'string', 'max:255'],
+            'title' => ['nullable', 'string', 'max:255'],
+            'sections' => ['required', 'array'],
+            'sections.*.key' => ['required', 'string', 'max:255'],
+            'sections.*.label' => ['nullable', 'string', 'max:255'],
+            'sections.*.visible' => ['required', 'boolean'],
+            'sections.*.position' => ['required', 'integer', 'min:0'],
+            'sections.*.content' => ['required', 'array'],
+        ]);
+        $page = DB::table('cms_pages')->where('slug', $data['slug'])->first();
+        abort_unless($page, 404, 'الصفحة غير موجودة.');
+        DB::transaction(function () use ($data, $page) {
+            if (!empty($data['title'])) {
+                DB::table('cms_pages')->where('id', $page->id)->update(['title' => $data['title'], 'updated_at' => now()]);
+            }
+            $existing = DB::table('cms_sections')->where('page_slug', $page->slug)->get()->keyBy('section_key');
+            foreach ($data['sections'] as $section) {
+                $content = $section['content'];
+                $row = [
+                    'visible' => $section['visible'],
+                    'position' => $section['position'],
+                    'title' => (string) ($content['title'] ?? ''),
+                    'subtitle' => (string) ($content['subtitle'] ?? ''),
+                    'body' => (string) ($content['body'] ?? ''),
+                    'items' => json_encode($content['items'] ?? [], JSON_UNESCAPED_UNICODE),
+                    'content' => json_encode($content, JSON_UNESCAPED_UNICODE),
+                    'updated_at' => now(),
+                ];
+                if (isset($existing[$section['key']])) {
+                    DB::table('cms_sections')->where('id', $existing[$section['key']]->id)->update($row);
+                } else {
+                    DB::table('cms_sections')->insert($row + [
+                        'page_slug' => $page->slug,
+                        'section_key' => $section['key'],
+                        'section_type' => $section['key'],
+                        'created_at' => now(),
+                    ]);
+                }
+            }
+        });
+        return response()->json(['ok' => true, 'page' => $this->page($page->id)]);
+    }
+
     public function updateSettings(Request $request)
     {
         $settings = $request->validate(['siteName' => ['required','string','max:120'], 'tagline' => ['nullable','string','max:255'], 'email' => ['nullable','email'], 'phone' => ['nullable','string','max:80'], 'address' => ['nullable','string','max:500'], 'facebook' => ['nullable','string','max:500'], 'twitter' => ['nullable','string','max:500'], 'linkedin' => ['nullable','string','max:500'], 'seoDescription' => ['nullable','string','max:2000']]);
