@@ -9,5 +9,6 @@
 - [x] Add a useful, protected admin dashboard to the admin pages list
 - [x] Move the admin sidebar to the right and improve the mobile layout
 - [x] Repair broken checkbox and check-input styling in the admin
+- [x] Improve dashboard section design and remove سجل الموقع (comment 26e332ba-e4c8-4129-8c94-f285f1a75feb)
 - [ ] Deploy backend changes to backend.solalaa.com (user action: upload/pull the updated backend files)
 - [ ] End-to-end verify live dashboard totals + save/publish + course CRUD against the deployed backend (needs deployed backend + a valid admin session; layout checks used isolated sample responses)
