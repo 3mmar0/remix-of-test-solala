@@ -1,5 +1,5 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
-import { ArrowLeft, ExternalLink, Layers } from "lucide-react";
+import { ArrowLeft, ExternalLink, Layers, LayoutDashboard, LockKeyhole } from "lucide-react";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { isAdminAuthed } from "@/lib/cms/client-store";
 import { useCms } from "@/lib/cms/CmsProvider";
@@ -19,6 +19,13 @@ function AdminPages() {
   return (
     <AdminShell title="صفحات الموقع" desc="اختر صفحة لتراها كما يراها الزائر، ثم اضغط على أي قسم لتعديل نصوصه وصوره ومشاهدة التغيير فوراً.">
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <Link to="/admin" className="flex flex-col rounded-2xl border border-border bg-card p-5 transition hover:border-primary/30">
+          <LayoutDashboard className="h-6 w-6 text-primary" />
+          <h2 className="mt-4 font-display text-lg font-bold">لوحة الإدارة</h2>
+          <p className="mt-1 flex items-center gap-2 text-sm text-muted-foreground"><LockKeyhole className="h-4 w-4" /> صفحة خاصة · تتطلب تسجيل الدخول</p>
+          <span dir="ltr" className="mt-5 text-sm text-muted-foreground">/admin</span>
+          <span className="mt-4 flex items-center gap-2 text-sm font-semibold text-primary">فتح لوحة الإدارة <ArrowLeft className="h-4 w-4" /></span>
+        </Link>
         {CMS_PAGES.map((page) => {
           const edited = page.sections.filter((s) => {
             const row = store.sections.find((x) => x.key === s.id);

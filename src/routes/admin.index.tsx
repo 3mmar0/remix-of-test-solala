@@ -1,39 +1,43 @@
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
-import { FileText, Settings2, Download } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { FileText, Download, GraduationCap, ClipboardList, Inbox } from "lucide-react";
 import { AdminShell } from "@/components/admin/AdminShell";
-import { exportCmsJson, isAdminAuthed } from "@/lib/cms/client-store";
+import { exportCmsJson } from "@/lib/cms/client-store";
 import { useCms } from "@/lib/cms/CmsProvider";
+import { adminDashboardOptions } from "@/lib/admin-dashboard";
+import { CMS_PAGES } from "@/lib/cms/pages";
+import { Button } from "@/components/ui/button";
+import { meta } from "@/lib/meta";
 
 export const Route = createFileRoute("/admin/")({
-  beforeLoad: () => {
-    if (typeof window !== "undefined" && !isAdminAuthed()) {
-      throw redirect({ to: "/admin/login" });
-    }
+  loader: ({ context }) => {
+    if (typeof window !== "undefined") return context.queryClient.ensureQueryData(adminDashboardOptions);
   },
+  head: () => ({ ...meta("لوحة الإدارة", "ملخص صفحات ودورات وتسجيلات منصة سلالة.", "/admin"), meta: [...meta("لوحة الإدارة", "ملخص صفحات ودورات وتسجيلات منصة سلالة.", "/admin").meta, { name: "robots", content: "noindex, nofollow" }] }),
   component: AdminHome,
 });
 
 function AdminHome() {
-  const { store, loading } = useCms();
+  const { store } = useCms();
+  const { data, isFetching, refetch } = useSuspenseQuery(adminDashboardOptions);
 
   return (
     <AdminShell
       title="نظرة عامة"
-      desc="حرّر إعدادات الموقع والأقسام والصفحات من مكان واحد، ثم احفظ أو صدّر النسخة الاحتياطية."
+      actions={<Button variant="outline" size="sm" disabled={isFetching} onClick={() => void refetch()}>تحديث</Button>}
     >
-      {loading ? (
-        <p className="text-muted-foreground">جاري تحميل البيانات...</p>
-      ) : (
         <div className="space-y-8">
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {[
-              { label: "صفحات الموقع", value: store.pages.length, to: "/admin/pages", icon: FileText },
-              { label: "البريد المعتمد", value: store.settings.email, to: "/admin/settings", icon: Settings2 },
+              { label: "صفحات الموقع", value: CMS_PAGES.length, to: "/admin/pages", icon: FileText },
+              { label: "الدورات", value: data.courses, to: "/admin/courses", icon: GraduationCap },
+              { label: "التسجيلات", value: data.registrations, to: "/admin/registrations", icon: ClipboardList },
+              { label: "طلبات جديدة", value: data.newRegistrations, to: "/admin/registrations", icon: Inbox },
             ].map((c) => (
               <Link
                 key={c.label}
                 to={c.to}
-                className="rounded-2xl border border-forest/10 bg-white p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-primary/30"
+                className="min-w-0 rounded-lg border border-border bg-card p-5 transition hover:border-primary/30"
               >
                 <c.icon className="h-5 w-5 text-gold-dark" />
                 <p className="mt-4 text-xs font-semibold text-muted-foreground">{c.label}</p>
@@ -42,7 +46,15 @@ function AdminHome() {
             ))}
           </div>
 
-          <section className="rounded-3xl border border-forest/10 bg-white p-6 shadow-soft md:p-8">
+          <section className="border-y border-border py-6">
+            <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="font-display text-xl font-bold">أحدث التسجيلات</h2><Button asChild variant="link"><Link to="/admin/registrations">كل التسجيلات</Link></Button></div>
+            <ul className="mt-4 divide-y divide-border">
+              {data.recent.map((row) => <li key={row.id} className="flex flex-wrap items-center justify-between gap-3 py-4"><div className="min-w-0"><p className="break-words font-semibold">{row.full_name}</p><p className="break-words text-sm text-muted-foreground">{row.course_title}</p></div><div className="text-sm text-muted-foreground"><p>{({ new: "جديد", contacted: "تم التواصل", accepted: "مقبول", closed: "مغلق" } as Record<string, string>)[row.state] ?? row.state}</p><time dateTime={row.created_at}>{new Date(row.created_at).toLocaleDateString("ar-EG")}</time></div></li>)}
+            </ul>
+            {!data.recent.length && <p className="py-6 text-sm text-muted-foreground">لا توجد تسجيلات حتى الآن.</p>}
+            <p className="mt-4 text-sm text-muted-foreground">الدورات المنشورة: {data.publishedCourses} · المسودات: {data.courses - data.publishedCourses}</p>
+          </section>
+          <section className="py-2">
             <h2 className="font-display text-xl font-bold">سجل الموقع</h2>
             <dl className="mt-5 grid gap-4 sm:grid-cols-2">
               <div>
@@ -60,20 +72,12 @@ function AdminHome() {
                 <dd className="mt-1 leading-7 text-muted-foreground">{store.settings.tagline}</dd>
               </div>
             </dl>
-            <button type="button" className="btn-primary mt-6" onClick={() => exportCmsJson(store)}>
+            <Button className="mt-6" onClick={() => exportCmsJson(store)}>
               <Download className="h-4 w-4" /> تصدير JSON
-            </button>
+            </Button>
           </section>
 
-          <section className="rounded-3xl border border-gold/25 bg-gold/10 p-6 text-sm leading-7 text-forest">
-            <p className="font-display text-base font-bold">الحفظ المركزي مفعّل</p>
-            <p className="mt-2 text-forest/75">
-              تُحفظ تغييرات الصفحات والأقسام وإعدادات الموقع مباشرةً عبر Solala API في قاعدة البيانات، وتبقى النسخة
-              الاحتياطية JSON متاحة للتصدير عند الحاجة.
-            </p>
-          </section>
         </div>
-      )}
     </AdminShell>
   );
 }

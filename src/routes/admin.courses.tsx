@@ -314,9 +314,9 @@ function CoursesAdmin() {
                   )}
                   <h2 className="truncate font-display text-xl font-bold">{heading}</h2>
                 </div>
-                <label className="relative">
+                <label className="relative min-w-0 w-full sm:w-56">
                   <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-forest/35" />
-                  <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="بحث بالاسم أو المدرب…" className={`${fieldInput} w-56 ps-9`} />
+                  <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="بحث بالاسم أو المدرب…" className={`${fieldInput} w-full ps-9`} />
                 </label>
                 <div className="flex rounded-xl bg-muted p-1 text-xs font-semibold">
                   {([
@@ -509,7 +509,7 @@ function TreeButton({ active, onClick, label, count, draft, bold }: { active: bo
 
 function RowMenu({ onEdit, onDelete }: { onEdit: () => void; onDelete: () => void }) {
   return (
-    <span className="flex shrink-0 opacity-0 transition group-hover:opacity-100 focus-within:opacity-100">
+    <span className="flex shrink-0 opacity-100 transition lg:opacity-0 lg:group-hover:opacity-100 focus-within:opacity-100">
       <button type="button" onClick={onEdit} className="rounded-md p-1.5 text-forest/45 hover:bg-muted hover:text-forest" aria-label="تعديل" title="تعديل">
         <Pencil className="h-3.5 w-3.5" />
       </button>
