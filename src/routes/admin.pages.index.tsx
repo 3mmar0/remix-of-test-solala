@@ -5,12 +5,13 @@ import { isAdminAuthed } from "@/lib/cms/client-store";
 import { useCms } from "@/lib/cms/CmsProvider";
 import { CMS_PAGES } from "@/lib/cms/pages";
 import { CONTENT_VERSION } from "@/lib/cms/schema";
+import { adminMeta } from "@/lib/meta";
 
 export const Route = createFileRoute("/admin/pages/")({
   beforeLoad: () => {
     if (typeof window !== "undefined" && !isAdminAuthed()) throw redirect({ to: "/admin/login" });
   },
-  head: () => ({ meta: [{ title: "صفحات الموقع | لوحة تحكم Solala" }, { name: "robots", content: "noindex" }] }),
+  head: () => adminMeta("صفحات الموقع", "إدارة صفحات وأقسام منصة سلالة.", "/admin/pages"),
   component: AdminPages,
 });
 

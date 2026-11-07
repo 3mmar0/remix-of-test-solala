@@ -35,6 +35,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Switch } from "@/components/ui/switch";
+import { adminMeta } from "@/lib/meta";
 import { isAdminAuthed } from "@/lib/cms/client-store";
 import { coursesApi, makeSlug, type AdminCategory, type AdminCourse, type AdminSpecialty } from "@/lib/courses-admin";
 
@@ -42,7 +43,7 @@ export const Route = createFileRoute("/admin/courses")({
   beforeLoad: () => {
     if (typeof window !== "undefined" && !isAdminAuthed()) throw redirect({ to: "/admin/login" });
   },
-  head: () => ({ meta: [{ title: "إدارة الدورات | لوحة تحكم Solala" }, { name: "robots", content: "noindex" }] }),
+  head: () => adminMeta("إدارة الدورات", "إدارة دورات وتخصصات وتصنيفات منصة سلالة.", "/admin/courses"),
   component: CoursesAdmin,
 });
 

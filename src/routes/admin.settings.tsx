@@ -4,8 +4,10 @@ import { AdminField, AdminShell, adminInput } from "@/components/admin/AdminShel
 import { isAdminAuthed } from "@/lib/cms/client-store";
 import { useCms } from "@/lib/cms/CmsProvider";
 import type { SiteSettings } from "@/lib/cms/types";
+import { adminMeta } from "@/lib/meta";
 
 export const Route = createFileRoute("/admin/settings")({
+  head: () => adminMeta("إعدادات الموقع", "إدارة بيانات وهوية وتواصل منصة سلالة.", "/admin/settings"),
   beforeLoad: () => {
     if (typeof window !== "undefined" && !isAdminAuthed()) {
       throw redirect({ to: "/admin/login" });

@@ -7,13 +7,13 @@ import { useCms } from "@/lib/cms/CmsProvider";
 import { adminDashboardOptions } from "@/lib/admin-dashboard";
 import { CMS_PAGES } from "@/lib/cms/pages";
 import { Button } from "@/components/ui/button";
-import { meta } from "@/lib/meta";
+import { adminMeta } from "@/lib/meta";
 
 export const Route = createFileRoute("/admin/")({
   loader: ({ context }) => {
-    if (typeof window !== "undefined") return context.queryClient.ensureQueryData(adminDashboardOptions);
+    return typeof window !== "undefined" ? context.queryClient.ensureQueryData(adminDashboardOptions) : undefined;
   },
-  head: () => ({ ...meta("لوحة الإدارة", "ملخص صفحات ودورات وتسجيلات منصة سلالة.", "/admin"), meta: [...meta("لوحة الإدارة", "ملخص صفحات ودورات وتسجيلات منصة سلالة.", "/admin").meta, { name: "robots", content: "noindex, nofollow" }] }),
+  head: () => adminMeta("لوحة الإدارة", "ملخص صفحات ودورات وتسجيلات منصة سلالة.", "/admin"),
   component: AdminHome,
 });
 

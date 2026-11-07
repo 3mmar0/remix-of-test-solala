@@ -29,12 +29,13 @@ import { findCmsPage } from "@/lib/cms/pages";
 import { PREVIEW_PARAM, isPreviewMessage, type PreviewSectionState } from "@/lib/cms/preview";
 import { resolveContent, serializeContent, type PageDef, type SectionContent } from "@/lib/cms/schema";
 import { savedSectionStates } from "@/lib/cms/use-section";
+import { adminMeta } from "@/lib/meta";
 
 export const Route = createFileRoute("/admin/pages/$pageKey")({
   beforeLoad: () => {
     if (typeof window !== "undefined" && !isAdminAuthed()) throw redirect({ to: "/admin/login" });
   },
-  head: () => ({ meta: [{ title: "تحرير الصفحة | لوحة تحكم Solala" }, { name: "robots", content: "noindex" }] }),
+  head: ({ params }) => adminMeta(`تحرير ${findCmsPage(params.pageKey)?.title ?? "الصفحة"}`, "تحرير محتوى صفحة سلالة ومعاينة التغييرات.", `/admin/pages/${params.pageKey}`),
   component: PageEditorRoute,
 });
 
